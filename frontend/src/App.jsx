@@ -11,18 +11,28 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [interviewFinished, setInterviewFinished] = useState(false);
   const [summary, setSummary] = useState(null);
+const [loadingReport, setLoadingReport] = useState(false);
 
   const [showReport, setShowReport] = useState(false);
   const [detailedReport, setDetailedReport] = useState(null);
 
   // Load Full Report
   async function handleViewFullReport() {
+  setLoadingReport(true);
+
+  try {
     const res = await fetch(`${API}/detailed_summary?session_id=${sessionId}`);
     const report = await res.json();
 
     setDetailedReport(report);
     setShowReport(true);
+  } catch (err) {
+    alert("Error fetching full report. Please try again.");
   }
+
+  setLoadingReport(false);
+}
+
 
   // Full Report Page
   if (showReport === true) {
@@ -33,6 +43,20 @@ function App() {
       />
     );
   }
+if (loadingReport) {
+  return (
+    <div style={{
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: "1.5rem",
+      fontWeight: "600"
+    }}>
+      ⏳ Generating Full Report... This may take 10–30 seconds...
+    </div>
+  );
+}
 
   // Default Interview Page
   return (
